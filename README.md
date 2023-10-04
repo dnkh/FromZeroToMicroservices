@@ -10,6 +10,6 @@ What will do:
 6. Build an Blazor UI
 7. Deploy to Azure using Azure Containers Apps
    
-The order is not fixes and is onyl a plan
+The order is not fixed, it's only a plan which can be changed
 During devolpment we will apply patterns (e.g. Mediator, CQRS, BFF, ...) and improve the code by adding well-known frameworks ( MediaTR, FluentValidations, AutoMapper, ...) and many more...
 It's a playground, but with focus on a production ready system.
