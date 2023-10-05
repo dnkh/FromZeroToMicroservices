@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.OpenApi;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -16,29 +19,35 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.MapGet("/users", Results<Ok<IList<User>>, NoContent> () =>
+{     
+    var users = GetUsers();
+    //return TypedResults.Ok(users);
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    return users.Count > 0
+        ? TypedResults.Ok(users)
+        : TypedResults.NoContent();
+        
+// new Microsoft.AspNetCore.Mvc.ProblemDetails
+//     {
+//         Title = "Not Found",
+//         Detail = "The requested resource was not found.",
+//         Status = StatusCodes.Status404NotFound,
+//         Type = "https://httpstatuses.com/404",
+//     });
 })
-.WithName("GetWeatherForecast")
+.WithName("GetUsers")
 .WithOpenApi();
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+IList<User> GetUsers() => new[]
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+    new User(1, "John Doe"),
+    new User(2, "Jane Doe"),
+};
+
+// IList<User> GetUsers() => new List<User>();
+
+public record User(int Id, string Name);
+
